@@ -52,7 +52,19 @@ python -W ignore [path-to-fairseq_cli/generate.py] data-bin/iwslt14.tokenized.de
     --batch-size 128 --beam 5 --remove-bpe --gen-subset test  > [path-to-save-to-file]
 ```
 
-### Transformer model checkpoints (GOLD-s)
+### Transformer models
+
+#### MLE model checkpoints
+
+MLE model for CNN/DM: download (~5G) from [this page](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart)
+
+MLE model for XSum: download (~5G) from [this page](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart)
+
+MLE model for SQuAD: [download (~5G)]()
+
+MLE model for IWSLT14 De-En: [download (~450M)](https://drive.google.com/file/d/1dynOAM-EJ4ptfUeP8G5DR_vKbkcIo9tI/view?usp=sharing)
+
+#### GOLD-s model checkpoints
 
 Model for CNN/DM: [download (~5G)](https://drive.google.com/file/d/1KW50i9JGIb9fI8DFWbln-id5dMX6ONiV/view?usp=sharing)
 
