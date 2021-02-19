@@ -8,7 +8,6 @@ from .adaptive_softmax import AdaptiveSoftmax
 from .beamable_mm import BeamableMM
 from .character_token_embedder import CharacterTokenEmbedder
 from .conv_tbc import ConvTBC
-from .cross_entropy import cross_entropy
 from .downsampled_multihead_attention import DownsampledMultiHeadAttention
 from .dynamic_convolution import DynamicConv, DynamicConv1dTBC
 from .dynamic_crf_layer import DynamicCRF
@@ -37,7 +36,6 @@ __all__ = [
     'BeamableMM',
     'CharacterTokenEmbedder',
     'ConvTBC',
-    'cross_entropy',
     'DownsampledMultiHeadAttention',
     'DynamicConv1dTBC',
     'DynamicConv',

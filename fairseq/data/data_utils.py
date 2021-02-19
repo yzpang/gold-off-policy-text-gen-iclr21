@@ -38,6 +38,7 @@ def collate_tokens(values, pad_idx, eos_idx=None, left_pad=False, move_eos_to_be
     def copy_tensor(src, dst):
         assert dst.numel() == src.numel()
         if move_eos_to_beginning:
+            assert src[-1] == eos_idx
             dst[0] = eos_idx
             dst[1:] = src[:-1]
         else:
@@ -230,7 +231,7 @@ def batch_by_size(
 
     if isinstance(indices, types.GeneratorType):
         indices = np.fromiter(indices, dtype=np.int64, count=-1)
-
+    # import ipdb; ipdb.set_trace()
     return batch_by_size_fast(indices, num_tokens_fn, max_tokens, max_sentences, bsz_mult)
 
 

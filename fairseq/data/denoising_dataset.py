@@ -119,7 +119,7 @@ class DenoisingDataset(FairseqDataset):
         self.eos = (eos if eos is not None else vocab.eos())
 
         if args.bpe != 'gpt2':
-            self.full_stop_index = self.vocab.eos()
+            self.full_stop_index = self.vocab.index(".")
         else:
             assert args.bpe == 'gpt2'
             self.full_stop_index = self.vocab.index('13')

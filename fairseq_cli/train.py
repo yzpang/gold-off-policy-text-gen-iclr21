@@ -7,6 +7,7 @@
 Train a new model on one or across multiple GPUs.
 """
 
+import copy
 import logging
 import math
 import os
@@ -86,35 +87,47 @@ def main(args, init_distributed=False):
     # corresponding train iterator
     extra_state, epoch_itr = checkpoint_utils.load_checkpoint(args, trainer)
 
+    # Load mle model
+    if args.load_path_mle is not None:
+        model_m = task.build_model(args)
+        trainer_mle = Trainer(args, task, model_m, criterion)
+        _ = checkpoint_utils.load_checkpoint_mle(args, trainer_mle)
+        input_m_mle = trainer_mle.model
+    else:
+        input_m_mle = None
+
     # Train until the learning rate gets too small
     max_epoch = args.max_epoch or math.inf
-    max_update = args.max_update or math.inf
     lr = trainer.get_lr()
     train_meter = meters.StopwatchMeter()
     train_meter.start()
+    valid_subsets = args.valid_subset.split(',')
     while (
         lr > args.min_lr
         and epoch_itr.next_epoch_idx <= max_epoch
     ):
-        # train for one epoch
-        valid_losses = train(args, trainer, task, epoch_itr, max_update)
-        if should_stop_early(args, valid_losses[0]) or trainer.get_num_updates() >= max_update:
-            break
+        # Train for one epoch
+        should_end_training = train(args, trainer, task, epoch_itr, input_m_mle)
 
-        # only use first validation loss to update the learning rate
+        valid_losses = validate_and_save(args, trainer, task, epoch_itr, valid_subsets)
+
+        # Only use first validation loss to update the learning rate
         lr = trainer.lr_step(epoch_itr.epoch, valid_losses[0])
 
         epoch_itr = trainer.get_train_iterator(
             epoch_itr.next_epoch_idx,
-            # sharded data: get train iterator for next epoch
+            # Sharded data: get train iterator for next epoch
             load_dataset=(os.pathsep in getattr(args, 'data', '')),
         )
+
+        if should_end_training:
+            break
     train_meter.stop()
     logger.info('done training in {:.1f} seconds'.format(train_meter.sum))
 
 
 def should_stop_early(args, valid_loss):
-    # skip check if no validation was done in the current epoch
+    # Skip check if no validation was done in the current epoch
     if valid_loss is None:
         return False
     if args.patience <= 0:
@@ -138,8 +151,16 @@ def should_stop_early(args, valid_loss):
 
 
 @metrics.aggregate('train')
-def train(args, trainer, task, epoch_itr, max_update=math.inf):
-    """Train the model for one epoch and return validation losses."""
+def train(args, trainer, task, epoch_itr, m_mle=None):
+    global model_old
+    global model_mle
+    model_old = copy.deepcopy(trainer.model)
+    if m_mle is None:
+        model_mle = model_old
+    else:
+        model_mle = m_mle
+
+    """Train the model for one epoch."""
     # Initialize data iterator
     itr = epoch_itr.next_epoch_itr(
         fix_batches_to_gpus=args.fix_batches_to_gpus,
@@ -166,33 +187,45 @@ def train(args, trainer, task, epoch_itr, max_update=math.inf):
     task.begin_epoch(epoch_itr.epoch, trainer.get_model())
 
     valid_subsets = args.valid_subset.split(',')
+    max_update = args.max_update or math.inf
+    should_end_training = False
     for samples in progress:
+        if True: # warning
+            valid_losses = validate_and_save(args, trainer, task, epoch_itr, valid_subsets)
+
         with metrics.aggregate('train_inner'):
+            # Debug: training goes here
             log_output = trainer.train_step(samples)
             if log_output is None:  # OOM, overflow, ...
                 continue
 
-        # log mid-epoch stats
+        # Log mid-epoch stats
         num_updates = trainer.get_num_updates()
         if num_updates % args.log_interval == 0:
             stats = get_training_stats(metrics.get_smoothed_values('train_inner'))
             progress.log(stats, tag='train_inner', step=num_updates)
 
-            # reset mid-epoch stats after each log interval
+            # Reset mid-epoch stats after each log interval
             # the end-of-epoch stats will still be preserved
             metrics.reset_meters('train_inner')
 
+        if num_updates > 2 and num_updates % (args.policy_update_per_k_epoch) == 0:  # warning
+            del model_old
+            torch.cuda.empty_cache()
+            model_old = copy.deepcopy(trainer.model)
+
         valid_losses = validate_and_save(args, trainer, task, epoch_itr, valid_subsets)
         if should_stop_early(args, valid_losses[0]) or num_updates >= max_update:
+            should_end_training = True
             break
 
-    # log end-of-epoch stats
+    # Log end-of-epoch stats
     stats = get_training_stats(metrics.get_smoothed_values('train'))
     progress.print(stats, tag='train', step=num_updates)
 
-    # reset epoch-level meters
+    # Reset epoch-level meters
     metrics.reset_meters('train')
-    return valid_losses
+    return should_end_training
 
 
 def validate_and_save(args, trainer, task, epoch_itr, valid_subsets):
@@ -221,10 +254,10 @@ def validate_and_save(args, trainer, task, epoch_itr, valid_subsets):
 
     # Validate
     valid_losses = [None]
-    if do_validate:
+    if do_validate:  # warning
         valid_losses = validate(args, trainer, task, epoch_itr, valid_subsets)
     # Save
-    if do_save:
+    if do_save:  # warning
         checkpoint_utils.save_checkpoint(args, trainer, epoch_itr, valid_losses[0])
     return valid_losses
 
@@ -240,7 +273,7 @@ def validate(args, trainer, task, epoch_itr, subsets):
     """Evaluate the model on the validation set(s) and return the losses."""
 
     if args.fixed_validation_seed is not None:
-        # set fixed seed for every validation
+        # Set fixed seed for every validation
         utils.set_torch_seed(args.fixed_validation_seed)
 
     valid_losses = []
@@ -273,13 +306,13 @@ def validate(args, trainer, task, epoch_itr, subsets):
             default_log_format=('tqdm' if not args.no_progress_bar else 'simple'),
         )
 
-        # create a new root metrics aggregator so validation metrics
+        # Create a new root metrics aggregator so validation metrics
         # don't pollute other aggregators (e.g., train meters)
         with metrics.aggregate(new_root=True) as agg:
             for sample in progress:
                 trainer.valid_step(sample)
 
-        # log validation stats
+        # Log validation stats
         stats = get_valid_stats(args, trainer, agg.get_smoothed_values())
         progress.print(stats, tag=subset, step=trainer.get_num_updates())
 
@@ -316,7 +349,7 @@ def cli_main(modify_parser=None):
         distributed_utils.infer_init_method(args)
 
     if args.distributed_init_method is not None:
-        # distributed training
+        # Distributed training
         if torch.cuda.device_count() > 1 and not args.distributed_no_spawn:
             start_rank = args.distributed_rank
             args.distributed_rank = None  # assign automatically
@@ -328,7 +361,7 @@ def cli_main(modify_parser=None):
         else:
             distributed_main(args.device_id, args)
     elif args.distributed_world_size > 1:
-        # fallback for single node with multiple GPUs
+        # Fallback for single node with multiple GPUs
         assert args.distributed_world_size <= torch.cuda.device_count()
         port = random.randint(10000, 20000)
         args.distributed_init_method = 'tcp://localhost:{port}'.format(port=port)
@@ -339,7 +372,7 @@ def cli_main(modify_parser=None):
             nprocs=args.distributed_world_size,
         )
     else:
-        # single GPU training
+        # Single GPU training
         main(args)
 
 

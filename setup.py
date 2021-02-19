@@ -13,6 +13,7 @@ if sys.version_info < (3, 6):
     sys.exit('Sorry, Python >= 3.6 is required for fairseq.')
 
 
+
 with open('README.md') as f:
     readme = f.read()
 
@@ -113,6 +114,40 @@ if 'clean' in sys.argv[1:]:
     print("deleting Cython files...")
     import subprocess
     subprocess.run(['rm -f fairseq/*.so fairseq/**/*.so fairseq/*.pyd fairseq/**/*.pyd'], shell=True)
+
+
+extensions = [
+    Extension(
+        'fairseq.libbleu',
+        sources=[
+            'fairseq/clib/libbleu/libbleu.cpp',
+            'fairseq/clib/libbleu/module.cpp',
+        ],
+        extra_compile_args=extra_compile_args,
+    ),
+    NumpyExtension(
+        'fairseq.data.data_utils_fast',
+        sources=['fairseq/data/data_utils_fast.pyx'],
+        language='c++',
+        extra_compile_args=extra_compile_args,
+    ),
+    NumpyExtension(
+        'fairseq.data.token_block_utils_fast',
+        sources=['fairseq/data/token_block_utils_fast.pyx'],
+        language='c++',
+        extra_compile_args=extra_compile_args,
+    ),
+]
+
+
+if 'test' in sys.argv[1:]:
+    try:
+        import fairseq.data.token_block_utils_fast
+    except (ImportError, ModuleNotFoundError):
+        raise Exception(
+            'Please install Cython components with `python setup.py build_ext --inplace`'
+            'before running unit tests.'
+        )
 
 
 setup(

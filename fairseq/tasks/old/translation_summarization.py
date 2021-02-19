@@ -261,7 +261,6 @@ class TranslationTask(FairseqTask):
         return LanguagePairDataset(src_tokens, src_lengths, self.source_dictionary)
 
     def build_model(self, args):
-        model = super().build_model(args)
         if getattr(args, 'eval_bleu', False):
             assert getattr(args, 'eval_bleu_detok', None) is not None, (
                 '--eval-bleu-detok is required if using --eval-bleu; '
@@ -275,8 +274,8 @@ class TranslationTask(FairseqTask):
             ))
 
             gen_args = json.loads(getattr(args, 'eval_bleu_args', '{}') or '{}')
-            self.sequence_generator = self.build_generator([model], Namespace(**gen_args))
-        return model
+            self.sequence_generator = self.build_generator(Namespace(**gen_args))
+        return super().build_model(args)
 
     def valid_step(self, sample, model, criterion):
         loss, sample_size, logging_output = super().valid_step(sample, model, criterion)

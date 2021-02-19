@@ -225,7 +225,10 @@ class FairseqTask(object):
 
         return criterions.build_criterion(args, self)
 
-    def build_generator(self, models, args):
+        # label_smoothed_cross_entropy for translation
+
+
+    def build_generator(self, args):
         if getattr(args, "score_reference", False):
             from fairseq.sequence_scorer import SequenceScorer
 
@@ -295,7 +298,6 @@ class FairseqTask(object):
             seq_gen_cls = SequenceGenerator
 
         return seq_gen_cls(
-            models,
             self.target_dictionary,
             beam_size=getattr(args, "beam", 5),
             max_len_a=getattr(args, "max_len_a", 0),
@@ -333,6 +335,8 @@ class FairseqTask(object):
                   gradient
                 - logging outputs to display while training
         """
+        # debug: goes here in training one step
+        # import ipdb; ipdb.set_trace()
         model.train()
         model.set_num_updates(update_num)
         loss, sample_size, logging_output = criterion(model, sample)
@@ -347,14 +351,9 @@ class FairseqTask(object):
             loss, sample_size, logging_output = criterion(model, sample)
         return loss, sample_size, logging_output
 
-    def inference_step(self, generator, models, sample, prefix_tokens=None, **kwargs):  # new
+    def inference_step(self, generator, models, sample, prefix_tokens=None, **kwargs):
         with torch.no_grad():
-            if self.args.fix_fairseq_bug_summarization:
-                return generator.generate(
-                    models, sample, prefix_tokens=prefix_tokens,
-                    fix_summarization_bug=True, **kwargs)
-            else:
-                return generator.generate(models, sample, prefix_tokens=prefix_tokens)
+            return generator.generate(models, sample, prefix_tokens=prefix_tokens, **kwargs)
 
     def begin_epoch(self, epoch, model):
         """Hook function called before the start of each epoch."""

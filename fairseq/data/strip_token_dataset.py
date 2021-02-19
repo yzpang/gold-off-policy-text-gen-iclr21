@@ -14,8 +14,4 @@ class StripTokenDataset(BaseWrapperDataset):
 
     def __getitem__(self, index):
         item = self.dataset[index]
-        while len(item) > 0 and item[-1] == self.id_to_strip:
-            item = item[:-1]
-        while len(item) > 0 and item[0] == self.id_to_strip:
-            item = item[1:]
-        return item
+        return item[item.ne(self.id_to_strip)]

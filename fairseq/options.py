@@ -45,7 +45,6 @@ def get_interactive_generation_parser(default_task="translation"):
 def get_eval_lm_parser(default_task="language_modeling"):
     parser = get_parser("Evaluate Language Model", default_task)
     add_dataset_args(parser, gen=True)
-    add_distributed_training_args(parser)
     add_eval_lm_args(parser)
     return parser
 
@@ -311,7 +310,7 @@ def add_dataset_args(parser, train=False, gen=False):
                        help='maximum number of tokens in a batch')
     group.add_argument('--max-sentences', '--batch-size', type=int, metavar='N',
                        help='maximum number of sentences in a batch')
-    group.add_argument('--required-batch-size-multiple', default=8, type=int, metavar='N',
+    group.add_argument('--required-batch-size-multiple', default=4, type=int, metavar='N',
                        help='batch size will be a multiplier of this value')
     parser.add_argument('--dataset-impl', metavar='FORMAT',
                         choices=get_available_dataset_impl(),
@@ -572,6 +571,9 @@ def add_generation_args(parser):
 
     # special decoding format for advanced decoding.
     group.add_argument('--decoding-format', default=None, type=str, choices=['unigram', 'ensemble', 'vote', 'dp', 'bs'])
+
+    group.add_argument('--fix-fairseq-bug-summarization', action='store_true',
+                       help='if set, address the summarization bug')  # https://github.com/pytorch/fairseq/issues/1971
     # fmt: on
     return group
 
@@ -601,5 +603,26 @@ def add_model_args(parser):
     group.add_argument('--arch', '-a', default='fconv', metavar='ARCH',
                        choices=ARCH_MODEL_REGISTRY.keys(),
                        help='Model Architecture')
+
+    # Some of the algorithm-specific options below
+    group.add_argument('--use-is-obj', type=int, default=1, choices=[0,1],
+                       help='use importance sampling objective')  # set to 0 for mle
+    group.add_argument('--load-path-mle', type=str, default=None)
+    group.add_argument('--q-baseline', type=float, default=-10.0,
+                        help='subtracted baseline for q function')  # per-step b in Algo 1
+    group.add_argument('--reward-type', type=str, default='logp',
+                        choices=['sump', 'logp'])  # logp is GOLD-p; sump is GOLD-s
+    group.add_argument('--trunc-min', type=float, default=1.0)  # c in Algo 1
+    group.add_argument('--iw-min', type=float, default=0.0)  # u in Algo 1
+    group.add_argument('--policy-update-per-k-epoch', type=int, default=5000)  # k in Algo 1
+
+    # Below: not used for now; could be helpful for further experiments; ablation studies / more tuning
+    group.add_argument('--suffix-num', type=int, default=5, choices=[0,1,2,3,4,5],
+                        help='number of suffix tokens to consider')  # not used now; will be useful for ablation/tuning
+    group.add_argument('--gamma', type=float, default=1.0,
+                        help='discount rate')  # not used now; will be useful for full trajectory returns
+    group.add_argument('--p40', type=int, default=0, choices=[0,1])  # not used now
+
+
     # fmt: on
     return group

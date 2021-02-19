@@ -1,173 +1,83 @@
-<p align="center">
-  <img src="fairseq_logo.png" width="150">
-  <br />
-  <br />
-  <a href="https://github.com/pytorch/fairseq/blob/master/LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-blue.svg" /></a>
-  <a href="https://github.com/pytorch/fairseq/releases"><img alt="Latest Release" src="https://img.shields.io/github/release/pytorch/fairseq.svg" /></a>
-  <a href="https://github.com/pytorch/fairseq/actions?query=workflow:build"><img alt="Build Status" src="https://github.com/pytorch/fairseq/workflows/build/badge.svg" /></a>
-  <a href="https://fairseq.readthedocs.io/en/latest/?badge=latest"><img alt="Documentation Status" src="https://readthedocs.org/projects/fairseq/badge/?version=latest" /></a>
-</p>
+# Text Generation by Learning from Demonstrations 
 
---------------------------------------------------------------------------------
+The README was last updated on February 18, 2021. The repo is based on [fairseq (v0.9.?)](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387).
 
-Fairseq(-py) is a sequence modeling toolkit that allows researchers and
-developers to train custom models for translation, summarization, language
-modeling and other text generation tasks.
+## Paper
 
-### What's New:
+[arXiv (to be updated)](https://arxiv.org/abs/2009.07839)
 
-- April 2020: [Initial model parallel support and 11B parameters unidirectional LM released](examples/megatron_11b/README.md)
-- March 2020: [Byte-level BPE code released](examples/byte_level_bpe/README.md)
-- February 2020: [mBART model and code released](examples/mbart/README.md)
-- February 2020: [Added tutorial for back-translation](https://github.com/pytorch/fairseq/tree/master/examples/backtranslation#training-your-own-model-wmt18-english-german)
-- December 2019: [fairseq 0.9.0 released](https://github.com/pytorch/fairseq/releases/tag/v0.9.0)
-- November 2019: [VizSeq released (a visual analysis toolkit for evaluating fairseq models)](https://facebookresearch.github.io/vizseq/docs/getting_started/fairseq_example)
-- November 2019: [CamemBERT model and code released](examples/camembert/README.md)
-- November 2019: [BART model and code released](examples/bart/README.md)
-- November 2019: [XLM-R models and code released](examples/xlmr/README.md)
-- September 2019: [Nonautoregressive translation code released](examples/nonautoregressive_translation/README.md)
-- August 2019: [WMT'19 models released](examples/wmt19/README.md)
-- July 2019: fairseq relicensed under MIT license
-- July 2019: [RoBERTa models and code released](examples/roberta/README.md)
-- June 2019: [wav2vec models and code released](examples/wav2vec/README.md)
+## Prerequisites
 
-### Features:
+Per fairseq usage, we need to install this particular modifed version fairseq. The simplest way: ```pip install --editable ./```. 
 
-Fairseq provides reference implementations of various sequence-to-sequence models, including:
-- **Convolutional Neural Networks (CNN)**
-  - [Language Modeling with Gated Convolutional Networks (Dauphin et al., 2017)](examples/language_model/conv_lm/README.md)
-  - [Convolutional Sequence to Sequence Learning (Gehring et al., 2017)](examples/conv_seq2seq/README.md)
-  - [Classical Structured Prediction Losses for Sequence to Sequence Learning (Edunov et al., 2018)](https://github.com/pytorch/fairseq/tree/classic_seqlevel)
-  - [Hierarchical Neural Story Generation (Fan et al., 2018)](examples/stories/README.md)
-  - [wav2vec: Unsupervised Pre-training for Speech Recognition (Schneider et al., 2019)](examples/wav2vec/README.md)
-- **LightConv and DynamicConv models**
-  - [Pay Less Attention with Lightweight and Dynamic Convolutions (Wu et al., 2019)](examples/pay_less_attention_paper/README.md)
-- **Long Short-Term Memory (LSTM) networks**
-  - Effective Approaches to Attention-based Neural Machine Translation (Luong et al., 2015)
-- **Transformer (self-attention) networks**
-  - Attention Is All You Need (Vaswani et al., 2017)
-  - [Scaling Neural Machine Translation (Ott et al., 2018)](examples/scaling_nmt/README.md)
-  - [Understanding Back-Translation at Scale (Edunov et al., 2018)](examples/backtranslation/README.md)
-  - [Adaptive Input Representations for Neural Language Modeling (Baevski and Auli, 2018)](examples/language_model/transformer_lm/README.md)
-  - [Mixture Models for Diverse Machine Translation: Tricks of the Trade (Shen et al., 2019)](examples/translation_moe/README.md)
-  - [RoBERTa: A Robustly Optimized BERT Pretraining Approach (Liu et al., 2019)](examples/roberta/README.md)
-  - [Facebook FAIR's WMT19 News Translation Task Submission (Ng et al., 2019)](examples/wmt19/README.md)
-  - [Jointly Learning to Align and Translate with Transformer Models (Garg et al., 2019)](examples/joint_alignment_translation/README.md )
-  - [Multilingual Denoising Pre-training for Neural Machine Translation (Liu et at., 2020)](examples/mbart/README.md)
-  - [Neural Machine Translation with Byte-Level Subwords (Wang et al., 2020)](examples/byte_level_bpe/README.md)
-- **Non-autoregressive Transformers**
-  - Non-Autoregressive Neural Machine Translation (Gu et al., 2017)
-  - Deterministic Non-Autoregressive Neural Sequence Modeling by Iterative Refinement (Lee et al. 2018)
-  - Insertion Transformer: Flexible Sequence Generation via Insertion Operations (Stern et al. 2019)
-  - Mask-Predict: Parallel Decoding of Conditional Masked Language Models (Ghazvininejad et al., 2019)
-  - [Levenshtein Transformer (Gu et al., 2019)](examples/nonautoregressive_translation/README.md)
+Due to pytorch changes, and given that we're using a slightly older version of fairseq (see below), please use pytorch version <= 1.6.0. However, the GOLD algorithm can be easily implemented on top of the latest fairseq (or most text generation codebases). 
+
+### Datasets
+
+For downloading CNN/DM and XSum datasets, we follow the instructions [here](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart); note that this link does not correspond to the latest fairseq. Our version of the CNN/DM input includes the "(CNN)" tags.
+
+For downloading IWSLT14 De-En dataset, we follow the instructions [here](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/translation). The binary files are provided in our repo, in the directory ```data-bin```.
+
+For downloading NQG dataset, we follow the instructions [here](https://github.com/clovaai/FocusSeq2Seq). The binary files are provided in the directory ```squad-bin```. 
 
 
-**Additionally:**
-- multi-GPU (distributed) training on one machine or across multiple machines
-- fast generation on both CPU and GPU with multiple search algorithms implemented:
-  - beam search
-  - Diverse Beam Search ([Vijayakumar et al., 2016](https://arxiv.org/abs/1610.02424))
-  - sampling (unconstrained, top-k and top-p/nucleus)
-- large mini-batch training even on a single GPU via delayed updates
-- mixed precision training (trains faster with less GPU memory on [NVIDIA tensor cores](https://developer.nvidia.com/tensor-cores))
-- extensible: easily register new models, criterions, tasks, optimizers and learning rate schedulers
+## Code: experiments on transformer models using fairseq
 
-We also provide [pre-trained models for translation and language modeling](#pre-trained-models-and-examples)
-with a convenient `torch.hub` interface:
-```python
-en2de = torch.hub.load('pytorch/fairseq', 'transformer.wmt19.en-de.single_model')
-en2de.translate('Hello world', beam=5)
-# 'Hallo Welt'
+For reproducibility, the code is based on a April 2020 [version](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387) of fairseq (based on release v0.9.0). However, it is easy to reimplement the GOLD algorithm in the latest version of fairseq and in another frameworks.
+
+How to implement in the latest version of fairseq?
+- If your GPUs "have large memory", then most of the implementation happens around the criterion code (for question generation, summarization, translation, the py file is ```./fairseq/criterions/label_smoothed_cross_entropy.py``` in the April 2020 version of fairseq). Note that the implementation in this repo uses this approach.
+  - "Have large memory": Meaning the GPUs can store pi, pi-tilde, p_MLE at the same time; see Algorithm 1 in the paper. In our experiments (using the same datasets, same batch size, etc.), this would imply that the GPUs have ~24G of memory.
+- If your GPUs cannot fit the above models, then you may need to input p_MLE probabilities as features. This can be done by first saving the probabilities into a text file or pickle file, and then loading them in the ```load_langpair_dataset``` function of ```./fairseq/tasks/translation.py``` (or other corresponding files for other tasks). 
+
+How to implement in other codebase?
+- See Algorithm 1 in the paper. The majority of the work will happen around the loss computation. We need to have three different models ready when computing losses: (1) pi, the network we're training; (2) pi-tilde, a slightly older version of pi (created to ensure training stability, similar to the periodic synchronization in deep Q-learning; (3) p_MLE, to compute rewards (but this can be pre-loaded in the form of input features, in case the GPU cannot fit the third model). 
+
+### BART summarization generation fairseq issue
+
+Given that there has been minor bugs with the fairseq BART summarization code ([details on original fairseq github](https://github.com/pytorch/fairseq/issues/1971)), we make the corresponding changes according to the fairseq authors' recommendation.
+(1) In ```./fairseq/sequence_generator.py```, see the modification [here](https://github.com/pytorch/fairseq/issues/1971#issuecomment-610471553).
+(2) In ```./fairseq/tasks/fairseq_task.py```, see the modification [here](https://github.com/pytorch/fairseq/issues/1971#issuecomment-610724245).
+(3) In ```./fairseq/models/bart/hub_interface.py```, see the modification [here](https://github.com/pytorch/fairseq/issues/1971#issuecomment-610724245).
+The above is already implemented in this repo.
+
+### How to run?
+
+The entry point for training is ```./fairseq_cli/train.py```. See ```./fairseq/options.py``` for possible flags. For CNN/DM, the script for running GOLD-p is provided in ```run_cnndm_goldp.sh```; the script for running GOLD-s (which often performs better than GOLD-p) is provided in ```run_cnndm_golds.sh```. [To add]
+
+For BART validation and evaluation, we use the inference scripts provided in ```run_cnndm_inference.sh```, ```run_xsum_inference.sh```, ```run_squad_inference.sh```. For IWSLT14 De-En inference, the following few lines will do.
 ```
-See the PyTorch Hub tutorials for [translation](https://pytorch.org/hub/pytorch_fairseq_translation/)
-and [RoBERTa](https://pytorch.org/hub/pytorch_fairseq_roberta/) for more examples.
-
-![Model](fairseq.gif)
-
-# Requirements and Installation
-
-* [PyTorch](http://pytorch.org/) version >= 1.4.0
-* Python version >= 3.6
-* For training new models, you'll also need an NVIDIA GPU and [NCCL](https://github.com/NVIDIA/nccl)
-* **For faster training** install NVIDIA's [apex](https://github.com/NVIDIA/apex) library:
-```bash
-git clone https://github.com/NVIDIA/apex
-cd apex
-pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" --global-option="--deprecated_fused_adam" --global-option="--xentropy" --global-option="--fast_multihead_attn" ./
+python -W ignore [path-to-fairseq_cli/generate.py] data-bin/iwslt14.tokenized.de-en \
+    --path [path-to-model-checkpoint.pt] \
+    --batch-size 128 --beam 5 --remove-bpe --gen-subset test  > [path-to-save-to-file]
 ```
 
-To install fairseq:
-```bash
-pip install fairseq
-```
+### Transformer model checkpoints (GOLD-s)
 
-On MacOS:
-```bash
-CFLAGS="-stdlib=libc++" pip install fairseq
-```
+Model for CNN/DM: [download (~5G)](https://drive.google.com/file/d/1KW50i9JGIb9fI8DFWbln-id5dMX6ONiV/view?usp=sharing)
 
-If you use Docker make sure to increase the shared memory size either with
-`--ipc=host` or `--shm-size` as command line options to `nvidia-docker run`.
+Model for XSum: [download (~5G)](https://drive.google.com/file/d/1etzTOHs9BHkqlajvhf9AhbYmqzYOCd-S/view?usp=sharing)
 
-**Installing from source**
+Model for SQuAD: [download (~5G)](https://drive.google.com/file/d/1-mTdmG5ip7nIj_brpOHpURS4a46_esrh/view?usp=sharing)
 
-To install fairseq from source and develop locally:
-```bash
-git clone https://github.com/pytorch/fairseq
-cd fairseq
-pip install --editable .
-```
+Model for IWSLT14 De-En: [download (~450M)](https://drive.google.com/file/d/1xdX-PmXCS7hFuw0CGvQ7KscY7owlcO2N/view?usp=sharing)
 
-# Getting Started
+Not a lot of finetuning was done for the transformer models, so it is likely that more finetuning could reach better performance. 
 
-The [full documentation](https://fairseq.readthedocs.io/) contains instructions
-for getting started, training new models and extending fairseq with new model
-types and tasks.
+Moreover, for summarization models, we use pyrouge+files2rouge to evaluate, based on [the fairseq instructions](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart) after pyrouge+files2rouge [installation](https://github.com/pltrdy/files2rouge). The package files2rouge has a common WordNet-2.0.exc.db error; see [this link](https://github.com/bheinzerling/pyrouge/issues/8) for the fix. 
 
-# Pre-trained models and examples
 
-We provide pre-trained models and pre-processed, binarized test sets for several tasks listed below,
-as well as example training and evaluation commands.
 
-- [Translation](examples/translation/README.md): convolutional and transformer models are available
-- [Language Modeling](examples/language_model/README.md): convolutional and transformer models are available
-- [wav2vec](examples/wav2vec/README.md): wav2vec large model is available
 
-We also have more detailed READMEs to reproduce results from specific papers:
-- [Neural Machine Translation with Byte-Level Subwords (Wang et al., 2020)](examples/byte_level_bpe/README.md)
-- [Jointly Learning to Align and Translate with Transformer Models (Garg et al., 2019)](examples/joint_alignment_translation/README.md )
-- [Levenshtein Transformer (Gu et al., 2019)](examples/nonautoregressive_translation/README.md)
-- [Facebook FAIR's WMT19 News Translation Task Submission (Ng et al., 2019)](examples/wmt19/README.md)
-- [RoBERTa: A Robustly Optimized BERT Pretraining Approach (Liu et al., 2019)](examples/roberta/README.md)
-- [wav2vec: Unsupervised Pre-training for Speech Recognition (Schneider et al., 2019)](examples/wav2vec/README.md)
-- [Mixture Models for Diverse Machine Translation: Tricks of the Trade (Shen et al., 2019)](examples/translation_moe/README.md)
-- [Pay Less Attention with Lightweight and Dynamic Convolutions (Wu et al., 2019)](examples/pay_less_attention_paper/README.md)
-- [Understanding Back-Translation at Scale (Edunov et al., 2018)](examples/backtranslation/README.md)
-- [Classical Structured Prediction Losses for Sequence to Sequence Learning (Edunov et al., 2018)](https://github.com/pytorch/fairseq/tree/classic_seqlevel)
-- [Hierarchical Neural Story Generation (Fan et al., 2018)](examples/stories/README.md)
-- [Scaling Neural Machine Translation (Ott et al., 2018)](examples/scaling_nmt/README.md)
-- [Convolutional Sequence to Sequence Learning (Gehring et al., 2017)](examples/conv_seq2seq/README.md)
-- [Language Modeling with Gated Convolutional Networks (Dauphin et al., 2017)](examples/language_model/conv_lm/README.md)
 
-# Join the fairseq community
 
-* Facebook page: https://www.facebook.com/groups/fairseq.users
-* Google group: https://groups.google.com/forum/#!forum/fairseq-users
 
-# License
-fairseq(-py) is MIT-licensed.
-The license applies to the pre-trained models as well.
+## Citation
 
-# Citation
+[The bibtex entry](https://yzpang.github.io/misc-files/bibs/pang2021text.txt)
 
-Please cite as:
+## Authors' websites and contact info
 
-```bibtex
-@inproceedings{ott2019fairseq,
-  title = {fairseq: A Fast, Extensible Toolkit for Sequence Modeling},
-  author = {Myle Ott and Sergey Edunov and Alexei Baevski and Angela Fan and Sam Gross and Nathan Ng and David Grangier and Michael Auli},
-  booktitle = {Proceedings of NAACL-HLT 2019: Demonstrations},
-  year = {2019},
-}
-```
+[Richard Yuanzhe Pang](https://yzpang.me)
+
+[He He](https://hhexiy.github.io)

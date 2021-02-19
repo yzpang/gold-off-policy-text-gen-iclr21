@@ -109,19 +109,32 @@ class BARTHubInterface(nn.Module):
 
     def generate(self, tokens: List[torch.LongTensor], beam: int = 5, verbose: bool = False, **kwargs) -> torch.LongTensor:
         sample = self._build_sample(tokens)
-
+        if 'fix_summarization_bug' in kwargs and kwargs['fix_summarization_bug']:
+            self.args.fix_fairseq_bug_summarization = True
+        else:
+            self.args.fix_fairseq_bug_summarization = False
         # build generator using current args as well as any kwargs
         gen_args = copy.copy(self.args)
         gen_args.beam = beam
         for k, v in kwargs.items():
             setattr(gen_args, k, v)
         generator = self.task.build_generator([self.model], gen_args)
-        translations = self.task.inference_step(
-            generator,
-            [self.model],
-            sample,
-            prefix_tokens=sample['net_input']['src_tokens'].new_zeros((len(tokens), 1)).fill_(self.task.source_dictionary.bos()),
-        )
+
+        if self.args.fix_fairseq_bug_summarization:
+            translations = self.task.inference_step(
+                generator,
+                [self.model],
+                sample,
+                prefix_tokens=sample['net_input']['src_tokens'].new_zeros((len(tokens), 1)).fill_(self.task.source_dictionary.bos()),
+                bos_token=self.task.source_dictionary.bos()
+            )
+        else:
+            translations = self.task.inference_step(
+                generator,
+                [self.model],
+                sample,
+                prefix_tokens=sample['net_input']['src_tokens'].new_zeros((len(tokens), 1)).fill_(self.task.source_dictionary.bos()),
+            )     
 
         if verbose:
             src_str_with_unk = self.string(tokens)

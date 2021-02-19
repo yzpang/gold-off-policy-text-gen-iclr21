@@ -65,6 +65,7 @@ class SequenceGenerator(nn.Module):
             self.model = EnsembleModel(models)
         self.pad = tgt_dict.pad()
         self.unk = tgt_dict.unk()
+        self.bos = tgt_dict.bos()
         self.eos = tgt_dict.eos() if eos is None else eos
         self.vocab_size = len(tgt_dict)
         self.beam_size = beam_size
@@ -163,7 +164,8 @@ class SequenceGenerator(nn.Module):
         self,
         sample: Dict[str, Dict[str, Tensor]],
         prefix_tokens: Optional[Tensor] = None,
-        bos_token: Optional[int] = None,
+        fix_summarization_bug: Optional[bool] = None,
+        bos_token: Optional[int] = False,
     ):
 
         encoder_input: Dict[str, Tensor] = {}
@@ -271,6 +273,13 @@ class SequenceGenerator(nn.Module):
 
             lprobs[:, self.pad] = -math.inf  # never select pad
             lprobs[:, self.unk] -= self.unk_penalty  # apply unk penalty
+
+            if fix_summarization_bug:
+                if step == 0:
+                    lprobs[:, self.bos] = 1000
+                else:
+                    lprobs[:, self.bos] = -math.inf
+
 
             # handle max length constraint
             if step >= max_len:
@@ -652,8 +661,8 @@ class SequenceGenerator(nn.Module):
             ]
         for bbsz_idx in range(bsz * beam_size):
             lprobs[bbsz_idx][
-                torch.tensor(banned_tokens[bbsz_idx]).long()
-            ] = torch.tensor(-math.inf, dtype=torch.float)
+                torch.tensor(banned_tokens[bbsz_idx]).long().cuda()
+            ] = torch.tensor(-math.inf, dtype=torch.float).cuda()
         return lprobs
 
 
