@@ -1,0 +1,14 @@
+Namespace(align_suffix=None, alignfile=None, all_gather_list_size=16384, bpe=None, checkpoint_suffix='', cpu=False, criterion='cross_entropy', dataset_impl='mmap', destdir='data-bin/iwslt14.tokenized.de-en', empty_cache_freq=0, fp16=False, fp16_init_scale=128, fp16_no_flatten_grads=False, fp16_scale_tolerance=0.0, fp16_scale_window=None, joined_dictionary=False, log_format=None, log_interval=100, lr_scheduler='fixed', memory_efficient_fp16=False, min_loss_scale=0.0001, model_parallel_size=1, no_progress_bar=False, nwordssrc=-1, nwordstgt=-1, only_source=False, optimizer='nag', padding_factor=8, seed=1, source_lang='de', srcdict=None, target_lang='en', task='translation', tensorboard_logdir='', testpref='examples/translation/iwslt14.tokenized.de-en/test', tgtdict=None, threshold_loss_scale=None, thresholdsrc=0, thresholdtgt=0, tokenizer=None, trainpref='examples/translation/iwslt14.tokenized.de-en/train', user_dir=None, validpref='examples/translation/iwslt14.tokenized.de-en/valid', workers=20)
+[de] Dictionary: 8847 types
+[de] examples/translation/iwslt14.tokenized.de-en/train.de: 160239 sents, 4035591 tokens, 0.0% replaced by <unk>
+[de] Dictionary: 8847 types
+[de] examples/translation/iwslt14.tokenized.de-en/valid.de: 7283 sents, 182592 tokens, 0.0192% replaced by <unk>
+[de] Dictionary: 8847 types
+[de] examples/translation/iwslt14.tokenized.de-en/test.de: 6750 sents, 161838 tokens, 0.0636% replaced by <unk>
+[en] Dictionary: 6631 types
+[en] examples/translation/iwslt14.tokenized.de-en/train.en: 160239 sents, 3949114 tokens, 0.0% replaced by <unk>
+[en] Dictionary: 6631 types
+[en] examples/translation/iwslt14.tokenized.de-en/valid.en: 7283 sents, 178622 tokens, 0.00448% replaced by <unk>
+[en] Dictionary: 6631 types
+[en] examples/translation/iwslt14.tokenized.de-en/test.en: 6750 sents, 156928 tokens, 0.00892% replaced by <unk>
+Wrote preprocessed data to data-bin/iwslt14.tokenized.de-en

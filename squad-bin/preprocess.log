@@ -1,0 +1,10 @@
+Namespace(align_suffix=None, alignfile=None, all_gather_list_size=16384, bpe=None, checkpoint_suffix='', cpu=False, criterion='cross_entropy', dataset_impl='mmap', destdir='squad-bin/', empty_cache_freq=0, fp16=False, fp16_init_scale=128, fp16_no_flatten_grads=False, fp16_scale_tolerance=0.0, fp16_scale_window=None, joined_dictionary=False, log_format=None, log_interval=100, lr_scheduler='fixed', memory_efficient_fp16=False, min_loss_scale=0.0001, model_parallel_size=1, no_progress_bar=False, nwordssrc=-1, nwordstgt=-1, only_source=False, optimizer='nag', padding_factor=8, seed=1, source_lang='source', srcdict='dict.txt', target_lang='target', task='translation', tensorboard_logdir='', testpref=None, tgtdict='dict.txt', threshold_loss_scale=None, thresholdsrc=0, thresholdtgt=0, tokenizer=None, trainpref='squad/train.bpe', user_dir=None, validpref='squad/val.bpe', workers=60)
+[source] Dictionary: 50263 types
+[source] squad/train.bpe.source: 86229 sents, 3691612 tokens, 0.0% replaced by <unk>
+[source] Dictionary: 50263 types
+[source] squad/val.bpe.source: 8913 sents, 388137 tokens, 0.0% replaced by <unk>
+[target] Dictionary: 50263 types
+[target] squad/train.bpe.target: 86229 sents, 1220232 tokens, 0.0% replaced by <unk>
+[target] Dictionary: 50263 types
+[target] squad/val.bpe.target: 8913 sents, 126772 tokens, 0.0% replaced by <unk>
+Wrote preprocessed data to squad-bin/
