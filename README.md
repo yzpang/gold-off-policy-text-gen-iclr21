@@ -1,6 +1,6 @@
 # Text Generation by Learning from Demonstrations 
 
-The README was last updated on February 18, 2021. The repo is based on [fairseq (v0.9.?)](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387).
+The README was last updated on March 2, 2021. The repo is based on [fairseq (v0.9.?)](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387).
 
 ## Paper
 
@@ -70,7 +70,7 @@ MLE model for CNN/DM: download (~5G) from [this page](https://github.com/pytorch
 
 MLE model for XSum: download (~5G) from [this page](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart)
 
-MLE model for SQuAD: [download (~5G)](https://drive.google.com/file/d/1-mTdmG5ip7nIj_brpOHpURS4a46_esrh/view?usp=sharing)
+MLE model for SQuAD: [download (~5G)](https://drive.google.com/file/d/1row5bhDem1BN-IiwMOFpbDrKduVt7dJi/view?usp=sharing)
 
 MLE model for IWSLT14 De-En: [download (~450M)](https://drive.google.com/file/d/1dynOAM-EJ4ptfUeP8G5DR_vKbkcIo9tI/view?usp=sharing)
 
