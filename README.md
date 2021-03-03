@@ -14,7 +14,7 @@ Due to pytorch changes, and given that we're using a slightly older version of f
 
 ### Datasets
 
-For downloading CNN/DM and XSum datasets, we follow the instructions [here](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart); note that this link does not correspond to the latest fairseq. Our version of the CNN/DM input articles include the "(CNN)" tags.
+For downloading CNN/DM and XSum datasets, we follow the instructions [here](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart); note that this link does not correspond to the latest fairseq. Our version of the CNN/DM input articles include the prepended "(CNN)" tags.
 
 For downloading IWSLT14 De-En dataset, we follow the instructions [here](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/translation). The binary files are provided in our repo, in the directory ```data-bin```.
 
@@ -63,6 +63,8 @@ python -W ignore [path-to-fairseq_cli/generate.py] data-bin/iwslt14.tokenized.de
 
 
 ### Transformer models
+
+Please ensure the data is processed appropriately before using the models.
 
 #### MLE model checkpoints
 
