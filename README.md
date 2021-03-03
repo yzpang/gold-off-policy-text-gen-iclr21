@@ -14,11 +14,11 @@ Due to pytorch changes, and given that we're using a slightly older version of f
 
 ### Datasets
 
-For downloading CNN/DM and XSum datasets, we follow the instructions [here](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart); note that this link does not correspond to the latest fairseq. Our version of the CNN/DM input includes the "(CNN)" tags.
+For downloading CNN/DM and XSum datasets, we follow the instructions [here](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart); note that this link does not correspond to the latest fairseq. Our version of the CNN/DM input articles include the "(CNN)" tags.
 
 For downloading IWSLT14 De-En dataset, we follow the instructions [here](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/translation). The binary files are provided in our repo, in the directory ```data-bin```.
 
-For downloading NQG dataset, we follow the instructions [here](https://github.com/clovaai/FocusSeq2Seq). The binary files are provided in the directory ```squad-bin```. 
+For downloading the particular version of our NQG dataset, we follow the instructions [here](https://github.com/clovaai/FocusSeq2Seq). The binary files are provided in the directory ```squad-bin```. 
 
 
 ## Code: experiments on transformer models using fairseq
@@ -43,18 +43,23 @@ The above is already implemented in this repo.
 
 ### How to run?
 
+#### Training
+
 The entry point for training is ```./fairseq_cli/train.py```. See ```./fairseq/options.py``` for possible flags. For CNN/DM, the script for running GOLD-p is provided in ```run_cnndm_goldp.sh```; the script for running GOLD-s (which often performs better than GOLD-p) is provided in ```run_cnndm_golds.sh```. [To add]
 
-For BART validation and evaluation, we use the inference scripts provided in ```run_cnndm_inference.sh```, ```run_xsum_inference.sh```, ```run_squad_inference.sh```. For IWSLT14 De-En inference, the following few lines will do.
+#### Validation
+
+Note that to validate, one possibility is to find the checkpoint that corresponds to highest BLEU/ROUGE-2 score on dev set. **We cannot validate according to NLL loss**, given that in the paper, we showed that our models achieve higher accuracy but higher perplexity (and NLL loss). Do not use checkpoint_best.pt. IWSLT14 De-En validation is implemented. For summarization, please use ```run_cnndm_validation.py``` (similar to ```run_cnndm_inference.py```) as an example to loop through all checkpoints.
+
+#### Evaluation/inference
+
+For BART evaluation, we use the inference scripts provided in ```run_cnndm_inference.sh```, ```run_xsum_inference.sh```, ```run_squad_inference.sh```. For IWSLT14 De-En inference, the following few lines will do.
 ```
 python -W ignore [path-to-fairseq_cli/generate.py] data-bin/iwslt14.tokenized.de-en \
     --path [path-to-model-checkpoint.pt] \
     --batch-size 128 --beam 5 --remove-bpe --gen-subset test  > [path-to-save-to-file]
 ```
 
-#### Validation
-
-Note that to validate, one possibility is to find the checkpoint that corresponds to highest BLEU/ROUGE-2 score on dev set. **We cannot validate according to NLL loss**, given that in the paper, we showed that our models achieve higher accuracy but higher perplexity (and NLL loss). IWSLT14 De-En validation is implemented. For summarization, please use ```run_cnndm_validation.py``` as an example to loop through all checkpoints.
 
 
 ### Transformer models
@@ -65,7 +70,7 @@ MLE model for CNN/DM: download (~5G) from [this page](https://github.com/pytorch
 
 MLE model for XSum: download (~5G) from [this page](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart)
 
-MLE model for SQuAD: [download (~5G)]()
+MLE model for SQuAD: [download (~5G)](https://drive.google.com/file/d/1-mTdmG5ip7nIj_brpOHpURS4a46_esrh/view?usp=sharing)
 
 MLE model for IWSLT14 De-En: [download (~450M)](https://drive.google.com/file/d/1dynOAM-EJ4ptfUeP8G5DR_vKbkcIo9tI/view?usp=sharing)
 
@@ -79,7 +84,7 @@ Model for SQuAD: [download (~5G)](https://drive.google.com/file/d/1-mTdmG5ip7nIj
 
 Model for IWSLT14 De-En: [download (~450M)](https://drive.google.com/file/d/1xdX-PmXCS7hFuw0CGvQ7KscY7owlcO2N/view?usp=sharing)
 
-Not a lot of finetuning was done for the transformer models, so it is likely that more finetuning could reach better performance. 
+Not a lot of hyperparameter search was done for the transformer models, so it is likely that more search (on hyperparameters, on architecture) could reach better performance. 
 
 Moreover, for summarization models, we use pyrouge+files2rouge to evaluate, based on [the fairseq instructions](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart) after pyrouge+files2rouge [installation](https://github.com/pltrdy/files2rouge). The package files2rouge has a common WordNet-2.0.exc.db error; see [this link](https://github.com/bheinzerling/pyrouge/issues/8) for the fix. 
 
