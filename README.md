@@ -52,6 +52,11 @@ python -W ignore [path-to-fairseq_cli/generate.py] data-bin/iwslt14.tokenized.de
     --batch-size 128 --beam 5 --remove-bpe --gen-subset test  > [path-to-save-to-file]
 ```
 
+#### Validation
+
+Note that to validate, one possibility is to find the checkpoint that corresponds to highest BLEU/ROUGE-2 score on dev set. **We cannot validate according to NLL loss**, given that in the paper, we showed that our models achieve higher accuracy but higher perplexity (and NLL loss). IWSLT14 De-En validation is implemented. For summarization, please use ```run_cnndm_validation.py``` as an example to loop through all checkpoints.
+
+
 ### Transformer models
 
 #### MLE model checkpoints
