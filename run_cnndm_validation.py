@@ -1,9 +1,13 @@
+import glob
+import os
 import torch
+
 from fairseq.models.bart import BARTModel
 
-num_checkpoints = 100
-for i in range(1, num_checkpoints+1):
-    bart = BARTModel.from_pretrained('/path/to/model/directory/', checkpoint_file='checkpoint'+str(i)+'.pt', data_name_or_path='cnn_dm-bin')
+
+tmp = [os.path.basename(x) for x in glob.glob("/path/to/model/directory/*pt*")]
+for filename in tmp:
+    bart = BARTModel.from_pretrained('/path/to/model/directory/', checkpoint_file=filename, data_name_or_path='cnn_dm-bin')
     bart.cuda()
     bart.eval()
     bart.half()

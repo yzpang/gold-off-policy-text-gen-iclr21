@@ -605,7 +605,7 @@ def add_model_args(parser):
                        help='Model Architecture')
 
     # Some of the algorithm-specific options below
-    group.add_argument('--use-is-obj', type=int, default=1, choices=[0,1],
+    group.add_argument('--use-is-obj', type=int, default=1, choices=[0, 1],
                        help='use importance sampling objective')  # set to 0 for mle
     group.add_argument('--load-path-mle', type=str, default=None)
     group.add_argument('--q-baseline', type=float, default=-10.0,
@@ -617,11 +617,11 @@ def add_model_args(parser):
     group.add_argument('--policy-update-per-k-epoch', type=int, default=5000)  # k in Algo 1
 
     # Below: not used for now; could be helpful for further experiments; ablation studies / more tuning
-    group.add_argument('--suffix-num', type=int, default=5, choices=[0,1,2,3,4,5],
+    group.add_argument('--suffix-num', type=int, default=5, choices=[0, 1, 2, 3, 4, 5],
                         help='number of suffix tokens to consider')  # not used now; will be useful for ablation/tuning
     group.add_argument('--gamma', type=float, default=1.0,
                         help='discount rate')  # not used now; will be useful for full trajectory returns
-    group.add_argument('--p40', type=int, default=0, choices=[0,1])  # not used now
+    group.add_argument('--p40', type=int, default=0, choices=[0, 1])  # not used now
 
 
     # fmt: on

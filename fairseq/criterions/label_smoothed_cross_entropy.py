@@ -11,7 +11,7 @@ from fairseq.criterions import FairseqCriterion, register_criterion
 
 
 def label_smoothed_nll_loss(lprobs, target, epsilon, ignore_index=None, reduce=True,
-        lprobs_old=None, lprobs_mle=None, config=None, sample=None):
+        probs_old=None, probs_mle=None, config=None, sample=None):
     from fairseq_cli.train import model_old, model_mle
 
     if target.dim() == lprobs.dim() - 1:
@@ -21,17 +21,17 @@ def label_smoothed_nll_loss(lprobs, target, epsilon, ignore_index=None, reduce=T
     batch_size = sample['target'].shape[0]
 
     # importance sampling; theta below is the same thing as pi in the paper 
-    if lprobs_old is None or lprobs_mle is None:
+    if probs_old is None or probs_mle is None:
         weight_theta_hat = 1.0  # the weight correspond to a slightly old version of pi
     else:
-        weight_theta_hat = lprobs_old.gather(dim=-1, index=target)
-        weight_mle = lprobs_mle.gather(dim=-1, index=target)
+        weight_theta_hat = probs_old.gather(dim=-1, index=target)
+        weight_mle = probs_mle.gather(dim=-1, index=target)
 
     if ignore_index is not None:
         pad_mask = target.eq(ignore_index)
         nll_loss.masked_fill_(pad_mask, 0.)
         smooth_loss.masked_fill_(pad_mask, 0.)
-        if lprobs_old is not None or lprobs_mle is not None:
+        if probs_old is not None or probs_mle is not None:
             weight_theta_hat.masked_fill_(pad_mask, 1.0)
     else:
         nll_loss = nll_loss.squeeze(-1)
@@ -39,7 +39,7 @@ def label_smoothed_nll_loss(lprobs, target, epsilon, ignore_index=None, reduce=T
         nll_loss_old = nll_loss_old.squeeze(-1)
         raise NotImplementedError
 
-    if lprobs_old is not None or lprobs_mle is not None:
+    if probs_old is not None or probs_mle is not None:
         with torch.no_grad():
             # the below code hardcodes for now
             if config.suffix_num > 0:
@@ -72,13 +72,13 @@ def label_smoothed_nll_loss(lprobs, target, epsilon, ignore_index=None, reduce=T
                             (config.gamma ** 3) * obtain_suffix_weights_kk(weight_mle, 3) + \
                             (config.gamma ** 4) * obtain_suffix_weights_kk(weight_mle, 4) + \
                             (config.gamma ** 5) * obtain_suffix_weights_kk(weight_mle, 5)
-                    except:  # check sequence length
+                    except:  # check sequence length; should never come here!
                         weight_suffix = obtain_suffix_weights_kk(weight_mle, 0) + \
                             (config.gamma ** 1) * obtain_suffix_weights_kk(weight_mle, 1) + \
                             (config.gamma ** 2) * obtain_suffix_weights_kk(weight_mle, 2) + \
                             (config.gamma ** 3) * obtain_suffix_weights_kk(weight_mle, 3)                     
                 else:
-                    # Can implement much more elegantly for longer suffix_num!
+                    # Can implement much more elegantly for longer suffix_num!!
                     raise NotImplementedError(config.suffix_num)
 
                 b1 = torch.clamp(weight_theta_hat, min=config.iw_min, max=1.0)  # warning
@@ -159,17 +159,17 @@ class LabelSmoothedCrossEntropyCriterion(FairseqCriterion):
 
         with torch.no_grad():
             if output_old is not None:
-                lprobs_old = model_old.get_normalized_probs(output_old, log_probs=False)
-                lprobs_old = lprobs_old.view(-1, lprobs.size(-1))
-                lprobs_mle = model_mle.get_normalized_probs(output_mle, log_probs=False)
-                lprobs_mle = lprobs_mle.view(-1, lprobs.size(-1))
+                probs_old = model_old.get_normalized_probs(output_old, log_probs=False)
+                probs_old = probs_old.view(-1, lprobs.size(-1))
+                probs_mle = model_mle.get_normalized_probs(output_mle, log_probs=False)
+                probs_mle = probs_mle.view(-1, lprobs.size(-1))
             else:
-                lprobs_old = None
-                lprobs_mle = None
+                probs_old = None
+                probs_mle = None
 
         loss, nll_loss = label_smoothed_nll_loss(
             lprobs, target, self.eps, ignore_index=self.padding_idx, reduce=reduce, 
-            lprobs_old=lprobs_old, lprobs_mle=lprobs_mle, config=model.args, sample=sample,
+            probs_old=probs_old, probs_mle=probs_mle, config=model.args, sample=sample,
         )
         return loss, nll_loss
 

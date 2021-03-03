@@ -108,12 +108,9 @@ def main(args, init_distributed=False):
     ):
         # Train for one epoch
         should_end_training = train(args, trainer, task, epoch_itr, input_m_mle)
-
         valid_losses = validate_and_save(args, trainer, task, epoch_itr, valid_subsets)
-
         # Only use first validation loss to update the learning rate
         lr = trainer.lr_step(epoch_itr.epoch, valid_losses[0])
-
         epoch_itr = trainer.get_train_iterator(
             epoch_itr.next_epoch_idx,
             # Sharded data: get train iterator for next epoch
