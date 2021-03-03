@@ -39,7 +39,7 @@ Given that there has been minor bugs with the fairseq BART summarization code ([
 (1) In ```./fairseq/sequence_generator.py```, see the modification [here](https://github.com/pytorch/fairseq/issues/1971#issuecomment-610471553).
 (2) In ```./fairseq/tasks/fairseq_task.py```, see the modification [here](https://github.com/pytorch/fairseq/issues/1971#issuecomment-610724245).
 (3) In ```./fairseq/models/bart/hub_interface.py```, see the modification [here](https://github.com/pytorch/fairseq/issues/1971#issuecomment-610724245).
-The above is already implemented in this repo.
+The above is already implemented in this repo. But if we're reimplementing the GOLD code in the latest fairseq, we need to beware of this issue (and keep the three modifications in mind).
 
 ### How to run?
 
