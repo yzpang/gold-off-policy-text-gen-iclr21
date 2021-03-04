@@ -18,7 +18,7 @@ For downloading CNN/DM and XSum datasets, we follow the instructions [here](http
 
 For downloading IWSLT14 De-En dataset, we follow the instructions [here](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/translation). The binary files are provided in our repo, in the directory ```data-bin```.
 
-For downloading the particular version of our NQG dataset, we follow the instructions [here](https://github.com/clovaai/FocusSeq2Seq). The binary files are provided in the directory ```squad-bin```. 
+For downloading the particular version of our NQG dataset, we follow the instructions [here](https://github.com/clovaai/FocusSeq2Seq). The binary files are provided upon request.
 
 
 ## Code: experiments on transformer models using fairseq
