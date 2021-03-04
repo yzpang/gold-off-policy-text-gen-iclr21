@@ -13,7 +13,7 @@ for filename in tmp:
     bart.half()
     count = 1
     bsz = 32
-    with open('cnn_dm/val.source') as source, open('cnn_dm/val.hypo', 'w') as fout:
+    with open('cnn_dm/val.source') as source, open('cnn_dm/val.'+filename+'.hypo', 'w') as fout:
         sline = source.readline().strip()
         slines = [sline]
         for sline in source:

@@ -51,6 +51,25 @@ The entry point for training is ```./fairseq_cli/train.py```. See ```./fairseq/o
 
 Note that to validate, one possibility is to find the checkpoint that corresponds to highest BLEU/ROUGE-2 score on dev set. **We cannot validate according to NLL loss**, given that in the paper, we showed that our models achieve higher accuracy but higher perplexity (and NLL loss). Do not use checkpoint_best.pt. IWSLT14 De-En validation is implemented. For summarization, please use ```run_cnndm_validation.py``` (similar to ```run_cnndm_inference.py```) as an example to loop through all checkpoints.
 
+Then, compute the ROUGE based on the following scripts (perhaps with small modificaiton).
+
+```
+export CLASSPATH=[path-to-stanford-corenlp-3.9.2.jar-or-more-recent-versions]
+
+for f in ./cnn_dm/*.hypo  # use appropriate directory depending on the task
+do 
+    echo "Processing $f..."
+
+    # Tokenize
+    cat $f | java edu.stanford.nlp.process.PTBTokenizer -ioFileList -preserveLines > $f.tokenized
+    cat test.target | java edu.stanford.nlp.process.PTBTokenizer -ioFileList -preserveLines > test.hypo.target
+
+    # Compute rouge
+    files2rouge $f.tokenized test.hypo.target > $f.out
+done
+
+```
+
 #### Evaluation/inference
 
 For BART evaluation, we use the inference scripts provided in ```run_cnndm_inference.sh```, ```run_xsum_inference.sh```, ```run_squad_inference.sh```. For IWSLT14 De-En inference, the following few lines will do.
