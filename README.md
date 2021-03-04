@@ -2,9 +2,11 @@
 
 The README was last updated on March 2, 2021. The repo is based on [fairseq (v0.9.?)](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387).
 
+
 ## Paper
 
 [arXiv (to be updated)](https://arxiv.org/abs/2009.07839)
+
 
 ## Prerequisites
 
@@ -14,10 +16,8 @@ Due to pytorch changes, and given that we're using a slightly older version of f
 
 ### Datasets
 
-For downloading CNN/DM and XSum datasets, we follow the instructions [here](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart); note that this link does not correspond to the latest fairseq. Our version of the CNN/DM input articles include the prepended "(CNN)" tags.
-
-For downloading IWSLT14 De-En dataset, we follow the instructions [here](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/translation). The binary files are provided in our repo, in the directory ```data-bin```.
-
+For downloading CNN/DM and XSum datasets, we follow the instructions [here](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart); note that this link does not correspond to the latest fairseq. Our version of the CNN/DM input articles include the prepended "(CNN)" tags. 
+For downloading IWSLT14 De-En dataset, we follow the instructions [here](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/translation). The binary files are provided in our repo, in the directory ```data-bin```. 
 For downloading the particular version of our NQG dataset, we follow the instructions [here](https://github.com/clovaai/FocusSeq2Seq). The binary files are provided upon request.
 
 
@@ -49,26 +49,7 @@ The entry point for training is ```./fairseq_cli/train.py```. See ```./fairseq/o
 
 #### Validation
 
-Note that to validate, one possibility is to find the checkpoint that corresponds to highest BLEU/ROUGE-2 score on dev set. **We cannot validate according to NLL loss**, given that in the paper, we showed that our models achieve higher accuracy but higher perplexity (and NLL loss). Do not use checkpoint_best.pt. IWSLT14 De-En validation is implemented. For summarization, please use ```run_cnndm_validation.py``` (similar to ```run_cnndm_inference.py```) as an example to loop through all checkpoints.
-
-Then, compute the ROUGE based on the following scripts (perhaps with small modifications).
-
-```
-export CLASSPATH=[path-to-stanford-corenlp-3.9.2.jar-or-more-recent-versions]
-
-for f in ./cnn_dm/*.hypo  # use appropriate directory depending on the task
-do 
-    echo "Processing $f..."
-
-    # Tokenize
-    cat $f | java edu.stanford.nlp.process.PTBTokenizer -ioFileList -preserveLines > $f.tokenized
-    cat ./cnn_dm/test.target | java edu.stanford.nlp.process.PTBTokenizer -ioFileList -preserveLines > ./cnn_dm/test.hypo.target
-
-    # Compute rouge
-    files2rouge $f.tokenized ./cnn_dm/test.hypo.target > $f.result.out
-done
-
-```
+Note that to validate, one possibility is to find the checkpoint that corresponds to highest BLEU/ROUGE-2 score on dev set. **We cannot validate according to NLL loss**, given that in the paper, we showed that our models achieve higher accuracy but higher perplexity (and NLL loss). Do not use checkpoint_best.pt. IWSLT14 De-En validation is implemented. For summarization, please use ```run_cnndm_validation.py``` (similar to ```run_cnndm_inference.py```) as an example to loop through all checkpoints. Then, compute the ROUGE based on ```run_cnndm_validation_step2.sh``` (perhaps with small modifications).
 
 #### Evaluation/inference
 
@@ -87,23 +68,17 @@ Please ensure the data is processed appropriately before using the models.
 
 #### MLE model checkpoints
 
-MLE model for CNN/DM: download (~5G) from [this page](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart)
-
-MLE model for XSum: download (~5G) from [this page](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart)
-
-MLE model for SQuAD: [download (~5G)](https://drive.google.com/file/d/1row5bhDem1BN-IiwMOFpbDrKduVt7dJi/view?usp=sharing)
-
-MLE model for IWSLT14 De-En: [download (~450M)](https://drive.google.com/file/d/1dynOAM-EJ4ptfUeP8G5DR_vKbkcIo9tI/view?usp=sharing)
+- MLE model for CNN/DM: download (~5G) from [this page](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart)
+- MLE model for XSum: download (~5G) from [this page](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387/examples/bart)
+- MLE model for SQuAD: [download (~5G)](https://drive.google.com/file/d/1row5bhDem1BN-IiwMOFpbDrKduVt7dJi/view?usp=sharing)
+- MLE model for IWSLT14 De-En: [download (~450M)](https://drive.google.com/file/d/1dynOAM-EJ4ptfUeP8G5DR_vKbkcIo9tI/view?usp=sharing)
 
 #### GOLD-s model checkpoints
 
-Model for CNN/DM: [download (~5G)](https://drive.google.com/file/d/1KW50i9JGIb9fI8DFWbln-id5dMX6ONiV/view?usp=sharing)
-
-Model for XSum: [download (~5G)](https://drive.google.com/file/d/1etzTOHs9BHkqlajvhf9AhbYmqzYOCd-S/view?usp=sharing)
-
-Model for SQuAD: [download (~5G)](https://drive.google.com/file/d/1-mTdmG5ip7nIj_brpOHpURS4a46_esrh/view?usp=sharing)
-
-Model for IWSLT14 De-En: [download (~450M)](https://drive.google.com/file/d/1xdX-PmXCS7hFuw0CGvQ7KscY7owlcO2N/view?usp=sharing)
+- Model for CNN/DM: [download (~5G)](https://drive.google.com/file/d/1KW50i9JGIb9fI8DFWbln-id5dMX6ONiV/view?usp=sharing)
+- Model for XSum: [download (~5G)](https://drive.google.com/file/d/1etzTOHs9BHkqlajvhf9AhbYmqzYOCd-S/view?usp=sharing)
+- Model for SQuAD: [download (~5G)](https://drive.google.com/file/d/1-mTdmG5ip7nIj_brpOHpURS4a46_esrh/view?usp=sharing)
+- Model for IWSLT14 De-En: [download (~450M)](https://drive.google.com/file/d/1xdX-PmXCS7hFuw0CGvQ7KscY7owlcO2N/view?usp=sharing)
 
 Not a lot of hyperparameter search was done for the transformer models, so it is likely that more search (on hyperparameters, on architecture) could reach better performance. 
 
@@ -111,15 +86,9 @@ Moreover, for summarization models, we use pyrouge+files2rouge to evaluate, base
 
 
 
-
-
-
-
-## Citation
+## Citation, authors, and contact
 
 [The bibtex entry](https://yzpang.github.io/misc-files/bibs/pang2021text.txt)
-
-## Authors' websites and contact info
 
 [Richard Yuanzhe Pang](https://yzpang.me)
 
