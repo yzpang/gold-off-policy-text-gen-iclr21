@@ -1,11 +1,11 @@
 # Text Generation by Learning from Demonstrations 
 
-The README was last updated on March 2, 2021. The repo is based on [fairseq (v0.9.?)](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387).
+The README was last updated on March 7, 2021. The repo is based on [fairseq (v0.9.?)](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387).
 
 
 ## Paper
 
-[arXiv (to be updated)](https://arxiv.org/abs/2009.07839)
+[arXiv](https://arxiv.org/abs/2009.07839)
 
 
 ## Prerequisites
@@ -45,7 +45,7 @@ The above is already implemented in this repo. But if we're reimplementing the G
 
 #### Training
 
-The entry point for training is ```./fairseq_cli/train.py```. See ```./fairseq/options.py``` for possible flags. For CNN/DM, the script for running GOLD-p is provided in ```run_cnndm_goldp.sh```; the script for running GOLD-s (which often performs better than GOLD-p) is provided in ```run_cnndm_golds.sh```. [To add]
+The entry point for training is ```./fairseq_cli/train.py```. See ```./fairseq/options.py``` for possible flags. For CNN/DM, the script for running GOLD-p is provided in ```run_cnndm_goldp.sh```; the script for running GOLD-s (which often performs better than GOLD-p) is provided in ```run_cnndm_golds.sh```. Some other scripts for other tasks are also provided. For explanations of flags, please refer to ```./fairseq/options.py``` as well as Algorithm 1 in the paper.
 
 #### Validation
 
