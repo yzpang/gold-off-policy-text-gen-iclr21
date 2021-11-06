@@ -1,6 +1,6 @@
 # Text Generation by Learning from Demonstrations 
 
-The README was last updated on March 7, 2021. The repo is based on [fairseq (v0.9.?)](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387).
+The latest major update of README was on March 7, 2021. The repo is based on [fairseq (v0.9.?)](https://github.com/pytorch/fairseq/tree/97d29d78e51e49de50e5105bcf4f9ebbd9fd7387).
 
 
 ## Paper
@@ -12,7 +12,25 @@ The README was last updated on March 7, 2021. The repo is based on [fairseq (v0.
 
 Per fairseq usage, we need to install this particular modifed version fairseq. The simplest way: ```pip install --editable ./```. 
 
-Due to pytorch changes, and given that we're using a slightly older version of fairseq (see below), please use pytorch version <= 1.6.0. However, the GOLD algorithm can be easily implemented on top of the latest fairseq (or most text generation codebases). 
+UPDATE (03/07/2021): Due to pytorch changes, and given that we're using a slightly older version of fairseq (see below), please use pytorch version <= 1.6.0. However, the GOLD algorithm can be easily implemented on top of the latest fairseq (or most text generation codebases). 
+
+UPDATE (11/06/2021): Unfortunately in late 2021, the latest packages do not work with the old versions of fairseq anymore. There are two solutions. The first solution is to downgrade the packages to the following versions but keep using fairseq v0.9. 
+```
+cffi                               1.12.3     
+Cython                             0.29.12    
+numpy                              1.20.1     
+regex                              2019.8.19  
+sacrebleu                          1.4.3      
+torch                              1.7.1      
+torchtext                          0.4.0      
+torchvision                        0.8.2      
+tqdm                               4.32.1     
+setuptools                         41.0.1     
+(Python 3.7.3)
+```
+The second solution is to use the exact same checkpoints, but on the latest version of fairseq (verified to work on 11/06/2021). If you only need to do inference, then you only need to fix the fairseq bugs related to BART (see the section "BART summarization generation fairseq issue"). If you need to rerun GOLD, Please refer to the paragraph "how to implement in the latest version of fairseq" as well as commit histories. 
+
+
 
 ### Datasets
 
