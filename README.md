@@ -46,8 +46,8 @@ For reproducibility, the code is based on a April 2020 [version](https://github.
 How to implement GOLD in the latest version of fairseq?
 - If your GPUs "have large memory", then most of the implementation happens around the criterion code (for question generation, summarization, translation, the py file is ```./fairseq/criterions/label_smoothed_cross_entropy.py``` in the April 2020 version of fairseq). Note that the implementation in this repo uses this approach.
   - "Have large memory": Meaning the GPUs can store pi, pi-tilde, p_MLE at the same time; see Algorithm 1 in the paper. In our experiments (using the same datasets, same batch size, etc.), this would imply that the GPUs have ~24G of memory for NQG, CNN/DM, and XSum. For ISWLT14 De-En, GPUs with ~12G of memory should be enough.
-  - We also need to modify ``./fairseq_cli/train.py'' so that we can load more than one model at the same time (i.e., pi, pi-tilde, p_MLE). 
-  - You can refer to the commit history. Many minor changes (on irrelevant files) are due to version inconsistencies so feel free to ignore them, if you're implementing on the latest version of fairseq.
+  - We also need to modify `./fairseq_cli/train.py` so that we can load more than one model at the same time (i.e., pi, pi-tilde, p_MLE). 
+  - You can refer to the commit history [here](https://github.com/yzpang/gold-off-policy-text-gen-iclr21/commit/8f2190bd2d9063735cb8a735c56a903b72f9f225). Many minor changes (on irrelevant files) are due to version inconsistencies so feel free to ignore them, if you're implementing on the latest version of fairseq.
 - If your GPUs cannot fit the above models, then you may need to input p_MLE probabilities as features. This can be done by first saving the probabilities into a text file or pickle file, and then loading them in the ```load_langpair_dataset``` function of ```./fairseq/tasks/translation.py``` (or other corresponding files for other tasks). 
 
 How to implement in other codebase?
